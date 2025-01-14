@@ -1,0 +1,75 @@
+
+# Geo
+geoip_country /usr/share/GeoIP/GeoIP.dat;
+
+map $geoip_country_code $allowed_country {
+  default no;
+  RU yes; # <ISO 3166-1 alpha-2> <yes/no>
+}
+
+# default <boolean>; if you follow restrict rules:
+## - whitelist rules; default 1;
+## - blacklist rules; default 0;
+geo $c_ip_addr {
+  default 1;
+  include /etc/nginx/ip_rules/ips.conf;
+}
+
+server {
+  listen ${NGINX_HOST_PORT};
+
+  server_name ${NGINX_HOST};
+
+  root /var/www/html;
+  index index.html index.nginx-debian.html;
+
+  error_log /var/log/nginx/error.log;
+  
+  location / {
+
+    
+  }
+
+  location /ngx_http_access_module {
+    add_header Content-Type text/plain;
+    # Rule `ngx allow/deny`;
+    include /etc/nginx/ip_rules/ip_block_rules.conf;
+    allow all;
+    return 200 "IP is allowed!";
+  }
+
+  location /ngx_http_geo_module {
+    add_header Content-Type text/plain;
+
+    # Rule `ngx_http_geo_module`;
+    if ($c_ip_addr = 0) {
+      return 200 "IP is blocked!";
+    }
+    return 200 "IP is allowed!";
+  }
+
+  location /geo {
+    add_header Content-Type text/plain;
+    if ($allowed_country = no) {
+      return 200 "Geo country code is blocked!";
+    }
+  }
+
+  location /detail {
+    add_header Content-Type text/plain;
+
+    echo -n "GeoIP code: ";
+    echo $geoip_country_code;
+
+    echo -n "remote_addr: ";
+    echo $remote_addr;
+
+    echo -n "_____________ \n";
+
+    echo -n "Is Geo country allowed: ";
+    echo $allowed_country;
+
+    echo -n "Is Ip allowed: ";
+    echo $c_ip_addr;
+  }
+}
