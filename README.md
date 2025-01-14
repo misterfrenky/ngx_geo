@@ -2,6 +2,11 @@
 ```
 docker compose up -d ubuntu-nginx --build
 ```
+#### Routes
+- `/ngx_http_access_module`
+- `/ngx_http_geo_module`:
+- `/geo`:
+- `/detail`
 
 ### Module `geo_module`
 #### Comparison  ngx_http_geo_module and ngx_http_access_module 
