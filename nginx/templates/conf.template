@@ -17,7 +17,6 @@ geo $c_ip_addr {
 
 server {
   listen ${NGINX_HOST_PORT};
-
   server_name ${NGINX_HOST};
 
   root /var/www/html;
@@ -27,7 +26,6 @@ server {
   
   location / {
 
-    
   }
 
   location /ngx_http_access_module {
